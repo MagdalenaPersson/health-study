@@ -21,3 +21,19 @@ def box_plot(ax, df, column, by, title="", xlabel="", ylabel="", showmeans=True)
     plt.suptitle("") 
     plt.tight_layout()
     return ax
+
+def bar_smoker(ax, counts, title="Andel rökare"):
+    ax.bar(counts.index.astype(str), 
+           counts.values, 
+           alpha=0.7, 
+           edgecolor="black", 
+           color=["tab:green", "tab:purple"]
+           )
+    ax.set_title(title)
+    ax.set_xlabel("")
+    ax.set_ylabel("Andel (%)")
+    ax.set_xticks([0, 1])
+    ax.set_xticklabels(["Icke rökare", "Rökare"])
+    ax.grid(True, axis="y")
+    plt.tight_layout()
+    return ax
