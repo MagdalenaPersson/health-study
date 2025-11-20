@@ -12,5 +12,5 @@ def smoker_count(df: pd.DataFrame) -> int:
     return df["smoker"].value_counts(normalize=True)*100
 
 def with_disease(df: pd.DataFrame) -> int:
-    return df[df["disease"] == 1].sum()
+    return (df["disease"] == 1).sum()
     
