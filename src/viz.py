@@ -59,3 +59,43 @@ class HealthAnalyzer:
 
         plt.tight_layout()
         return ax
+    
+    def plot_bootstrap_vs_normal(self,
+            ax1, ax2, *,
+            b_means, mean_x,
+            ci_low, ci_high,
+            lo_norm, hi_norm,
+            title_one="Bootstrap och normalapproximering av medelvärdet",
+            title_two="Jämförelse av 95% CI: Bootstrap vs Normalapproximation"):
+    
+        ax1.hist(b_means, bins=30, alpha=0.7, edgecolor="black")
+        ax1.axvline(mean_x, color="tab:green", linestyle="--", linewidth=2, label="Stickprovsmedel")
+        ax1.axvline(ci_low, color="tab:red", linestyle="--", label="Bootstrap 2.5%")
+        ax1.axvline(ci_high, color="tab:red", linestyle="--", label="Bootstrap 97.5%")
+        ax1.axvline(lo_norm, color="tab:blue", linestyle="--", label="Norm low")
+        ax1.axvline(hi_norm, color="tab:blue", linestyle="--", label="Norm high")
+        ax1.set_title(title_one)
+        ax1.set_xlabel("Blodtryck (medel av stickprov)")
+        ax1.set_ylabel("Antal")
+        ax1.grid(True, axis="y")
+        ax1.legend()
+        
+        boot_lower = mean_x - ci_low
+        boot_upper = ci_high - mean_x
+        norm_lower = mean_x - lo_norm
+        norm_upper = hi_norm - mean_x
+
+        ax2.errorbar("Bootstrap", [mean_x],
+                    yerr=[[boot_lower], [boot_upper]],
+                    elinewidth=2, markersize=8, fmt="o", capsize=8, label="Bootstrap CI")
+
+        ax2.errorbar("Normalapproximation", [mean_x],
+                    yerr=[[norm_lower], [norm_upper]],
+                    elinewidth=2, markersize=8, fmt="o", capsize=8, label="Normal CI")
+
+        ax2.set_ylabel("Medelvärde Blodtryck (mmHg)")
+        ax2.set_title(title_two)
+        ax2.grid(True, axis="y", linestyle="--")
+        ax2.legend()
+
+        return ax1, ax2
