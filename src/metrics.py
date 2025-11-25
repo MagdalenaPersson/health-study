@@ -90,3 +90,8 @@ def lr_systolicbp_weight(df:pd.DataFrame):
     r2 = float(linreg.score(X, y))
 
     return intercept, slope, r2
+
+def disease_per_gender(df: pd.DataFrame):
+    stats = df.groupby("sex")["disease"].mean()
+    
+    return f"Kvinnor:{stats.loc['F']:.1%}, Män:{stats.loc['M']:.1%}"
