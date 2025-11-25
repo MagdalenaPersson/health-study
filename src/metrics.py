@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+from scipy import stats
+from sklearn.linear_model import LinearRegression
 
 def summary(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame ({
@@ -54,3 +56,37 @@ def bootstrap_mean_difference(x1, x2, B=5000):
     ci_low, ci_high = np.percentile(boot_diffs, [2.5, 97.5])
 
     return obs_diff, boot_diffs, p_boot, ci_low, ci_high
+
+def estimate_power_by_simulation(n_no, n_yes, 
+                                 mean_no, mean_yes, 
+                                 std_no, std_yes, 
+                                 alpha=0.05, num_simulations=5000):
+    
+    rng = np.random.default_rng()
+    rejections = 0
+
+    for _ in range(num_simulations):
+       
+        x = rng.normal(loc=mean_no, scale=std_no, size=n_no)
+        y = rng.normal(loc=mean_yes, scale=std_yes, size=n_yes)
+
+        _, pval = stats.ttest_ind(x, y, equal_var=False)
+
+        if pval < alpha:
+            rejections += 1
+
+    return rejections / num_simulations
+
+def lr_systolicbp_weight(df:pd.DataFrame):
+
+    X = df[["weight"]].values
+    y = df["systolic_bp"].values
+
+    linreg = LinearRegression()
+    linreg.fit(X, y)
+
+    intercept = float(linreg.intercept_)
+    slope = float(linreg.coef_[0])
+    r2 = float(linreg.score(X, y))
+
+    return intercept, slope, r2

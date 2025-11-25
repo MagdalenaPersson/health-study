@@ -2,6 +2,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 from dataclasses import dataclass
+from sklearn.linear_model import LinearRegression
+import numpy as np
 
 @dataclass
 class HealthAnalyzer:
@@ -99,3 +101,20 @@ class HealthAnalyzer:
         ax2.legend()
 
         return ax1, ax2
+    
+    def plot_lr_systolicbp_weight(self, ax):
+        X = self.df[["weight"]].values
+        y = self.df["systolic_bp"].values
+
+        linreg = LinearRegression()
+        linreg.fit(X, y)
+        grid_x = np.linspace(X.min(), X.max(), 200)
+        grid_y = linreg.predict(grid_x.reshape(-1, 1))
+
+        ax.scatter(X, y, alpha=0.6, edgecolor="black")
+        ax.plot(grid_x, grid_y, linewidth=2, color="tab:red", linestyle="--")
+        ax.set_xlabel("Vikt (kg)")
+        ax.set_ylabel("Blodtryck (mmHg)")
+        ax.set_title("Linjär regression: vikt vs. blodtryck")
+
+        return ax
