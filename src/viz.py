@@ -108,13 +108,16 @@ class HealthAnalyzer:
 
         linreg = LinearRegression()
         linreg.fit(X, y)
+        r2 = float(linreg.score(X, y))
         grid_x = np.linspace(X.min(), X.max(), 200)
         grid_y = linreg.predict(grid_x.reshape(-1, 1))
 
-        ax.scatter(X, y, alpha=0.6, edgecolor="black")
-        ax.plot(grid_x, grid_y, linewidth=2, color="tab:red", linestyle="--")
+        ax.scatter(X, y, alpha=0.6, edgecolor="black", label="Data")
+        ax.plot(grid_x, grid_y, linewidth=2, color="tab:red", linestyle="--", label=f"Trendlinje(R²={r2:.2f})")
         ax.set_xlabel("Vikt (kg)")
         ax.set_ylabel("Blodtryck (mmHg)")
-        ax.set_title("Linjär regression: vikt vs. blodtryck")
+        ax.set_title("Linjär regression: Blodtryck ~ vikt")
+        ax.grid(True, color="gray", alpha=0.6)
+        ax.legend()
 
         return ax
