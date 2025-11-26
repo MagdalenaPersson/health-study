@@ -11,6 +11,11 @@ from sklearn.preprocessing import StandardScaler
 @dataclass
 class HealthAnalyzer:
     df: pd.DataFrame
+    """
+    En klass för att analysera hälsodata och generera grafer med hjälp av en DataFrame 
+    som innehåller hälsodata, t.ex. blodtryck, vikt, rökstatus
+    Klassen fungerar som en bas för olika analysmoduler (grafer och statistik).
+    """
 
     def hist_mean(self, ax, values, bins=20, title="", xlabel="", ylabel="Antal deltagare", kde=True, grid=True):
         """
