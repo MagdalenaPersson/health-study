@@ -1,6 +1,6 @@
 ## Miljö
 - **Python:** 3.13.7
-- **Paket:** `Pandas`, `Matplotlib`, `Numpy`, `Seaborn`, `Scipy` (se `requirements.txt`)
+- **Paket:** `Pandas`, `Matplotlib`, `Numpy`, `Seaborn`, `Scikit-learn` (se `requirements.txt`)
 
 ## Hur man kör projektet:
 
