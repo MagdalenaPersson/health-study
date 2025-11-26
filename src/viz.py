@@ -13,6 +13,9 @@ class HealthAnalyzer:
     df: pd.DataFrame
 
     def hist_mean(self, ax, values, bins=20, title="", xlabel="", ylabel="Antal deltagare", kde=True, grid=True):
+        """
+        Ritar ett histogram för en variabel och markerar dess medelvärde. 
+        """
         sns.histplot(values, bins=bins, kde=kde, edgecolor="black", ax=ax)
         ax.axvline(values.mean(), color="red", linestyle="--", linewidth="1", label="Medelvärde")
         ax.set_title(title, fontsize=15)
@@ -24,6 +27,9 @@ class HealthAnalyzer:
         return ax
 
     def box_plot(self, ax, df, column, by, title="", xlabel="", ylabel="", showmeans=True):
+        """
+        Ritar en boxplot för vald variabel grupperad efter en kategorivariabel.
+        """
         df.boxplot(column=column, by=by, ax=ax, showmeans=showmeans)
         ax.set_title(title)
         ax.set_xlabel(xlabel)
@@ -33,6 +39,9 @@ class HealthAnalyzer:
         return ax
 
     def bar_smoker(self, ax, counts, title="Andel rökare"):
+        """
+        Ritar ett stapeldiagram över andelen rökare i procent.
+        """
         ax.bar(counts.index.astype(str), 
             counts.values, 
             alpha=0.7, 
@@ -49,6 +58,9 @@ class HealthAnalyzer:
         return ax
     
     def bar_disease_simulation(self, ax, n=1000, title="Verklig andel sjuka vs simulation"):
+        """
+        Ritar ett stapeldiagram över verklig andel sjuka vs simulation.
+        """
         sick = M.with_disease(self.df) / len(self.df)
         sim = np.random.choice([0, 1], size=n, p=[1 - sick, sick])
         sim_mean = sim.mean()
@@ -76,6 +88,11 @@ class HealthAnalyzer:
             lo_norm, hi_norm,
             title_one="Bootstrap och normalapproximering av medelvärdet",
             title_two="Jämförelse av 95% CI: Bootstrap vs Normalapproximation"):
+        """
+        Tar fram två olika grafer.
+        Graf 1. är ett histogram som visar Bootstrap och normalapproximering av medelvärdet för blodtryck.
+        Graf 2. är en errorbar som visar en jämförelse av 95% CI: Bootstrap vs Normalapproximation
+        """
     
         ax1.hist(b_means, bins=30, alpha=0.7, edgecolor="black")
         ax1.axvline(mean_x, color="tab:green", linestyle="--", linewidth=2, label="Stickprovsmedel")
@@ -110,6 +127,9 @@ class HealthAnalyzer:
         return ax1, ax2
     
     def plot_lr_systolicbp_weight(self, ax):
+        """
+        Ritar en scatter med en linjär regression: Blodtryck ~ vikt
+        """
         X = self.df[["weight"]].values
         y = self.df["systolic_bp"].values
 
@@ -130,7 +150,9 @@ class HealthAnalyzer:
         return ax
     
     def disease_per_gender_bar(self, ax=None, title="Andel sjuka per kön"):
-  
+        """
+        Ritar ett stapeldiagram över andelen sjuka per kön.
+        """
         stats = self.df.groupby("sex")["disease"].mean() * 100
 
         if ax is None:
@@ -156,6 +178,9 @@ class HealthAnalyzer:
         return ax
     
     def pca_plot(self, ax):
+        """
+        Ritar en scatter över PCA: Blodtryck + vikt
+        """
         pca_bw = self.df[["systolic_bp", "weight"]].values
 
         scaler = StandardScaler()
