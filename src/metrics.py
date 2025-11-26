@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 from sklearn.linear_model import LinearRegression
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
 def summary(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame ({
@@ -95,3 +97,28 @@ def disease_per_gender(df: pd.DataFrame):
     stats = df.groupby("sex")["disease"].mean()
     
     return f"Kvinnor:{stats.loc['F']:.1%}, Män:{stats.loc['M']:.1%}"
+
+def pca_systolicbp_weight(df: pd.DataFrame):
+    pca_bw = df[["systolic_bp", "weight"]].values
+
+    scaler = StandardScaler()
+    pca_bw_scaled = scaler.fit_transform(pca_bw)
+
+    pca = PCA(n_components=2)
+    pca.fit(pca_bw_scaled)
+
+    explained = pca.explained_variance_ratio_
+    components = pca.components_
+
+    return explained, components
+
+def print_pca_bw(explained, components, names=["systolic_bp", "weight"]):
+    print("Förklarad varians per komponent:")
+    for i, v in enumerate(explained):
+        print(f"  PC{i+1}: {v*100:.2f}%")
+
+    print("\nKomponentvikter (PCA-axlar):")
+    for i, comp in enumerate(components):
+        print(f"\nPC{i+1}:")
+        for var, w in zip(names, comp):
+            print(f"  {var:12s} -> {w:.3f}")

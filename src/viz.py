@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from sklearn.linear_model import LinearRegression
 import numpy as np
 import metrics as M
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
 @dataclass
 class HealthAnalyzer:
@@ -46,12 +48,14 @@ class HealthAnalyzer:
         plt.tight_layout()
         return ax
     
-    def bar_disease_simulation(self, ax, 
-                               real, simulated, 
-                               title="Verklig andel sjuka vs simulation"):
+    def bar_disease_simulation(self, ax, n=1000, title="Verklig andel sjuka vs simulation"):
+        sick = M.with_disease(self.df) / len(self.df)
+        sim = np.random.choice([0, 1], size=n, p=[1 - sick, sick])
+        sim_mean = sim.mean()
+
         ax.bar(
         ["Verklig andel", "Simulerad andel"],
-        [real * 100, simulated * 100],
+        [sick * 100, sim_mean * 100],
         alpha=0.7,
         edgecolor="black",
         color=["tab:blue", "tab:orange"]
@@ -127,25 +131,42 @@ class HealthAnalyzer:
     
     def disease_per_gender_bar(self, ax=None, title="Andel sjuka per kön"):
   
-        stats = self.df.groupby("sex")["disease"].mean()
-        female = stats.get("F", 0)
-        male = stats.get("M", 0)
+        stats = self.df.groupby("sex")["disease"].mean() * 100
 
         if ax is None:
             fig, ax = plt.subplots()
-
+        
         ax.bar(
-            ["Kvinnor", "Män"],
-            [female * 100, male * 100],
-            alpha=0.7,
-            edgecolor="black",
-            color=["tab:red", "tab:blue"]
+        stats.index.astype(str),
+        stats.values,
+        alpha=0.7,
+        edgecolor="black",
+        color=["tab:red", "tab:blue"]
         )
 
+        ax.set_xticks(range(len(stats.index)))
+        ax.set_xticklabels(["Kvinnor" if x=="F" else "Män" for x in stats.index])
+
         ax.set_title(title)
-        ax.set_xlabel("")
+        ax.set_xlabel("Kön")
         ax.set_ylabel("Andel sjuka (%)")
         ax.grid(True, axis="y")
 
         plt.tight_layout()
+        return ax
+    
+    def pca_plot(self, ax):
+        pca_bw = self.df[["systolic_bp", "weight"]].values
+
+        scaler = StandardScaler()
+        pca_bw_scaled = scaler.fit_transform(pca_bw)
+
+        pca = PCA(n_components=2)
+        X_pca = pca.fit_transform(pca_bw_scaled)
+
+        ax.scatter(X_pca[:, 0], X_pca[:, 1], alpha=0.7, edgecolor="black")
+        ax.set_xlabel("PC1")
+        ax.set_ylabel("PC2")
+        ax.set_title("PCA av blodtryck + vikt")
+
         return ax
