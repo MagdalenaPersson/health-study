@@ -193,5 +193,6 @@ class HealthAnalyzer:
         ax.set_xlabel("PC1")
         ax.set_ylabel("PC2")
         ax.set_title("PCA av blodtryck + vikt")
+        ax.grid(True, alpha=0.6)
 
         return ax
